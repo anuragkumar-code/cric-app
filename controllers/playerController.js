@@ -30,7 +30,6 @@ const registerPlayer = async (req,res) => {
         throw new Error('Missing password.');
     }
 
-
     try {
         
         const emailUser = await User.findOne({ where: { email: email } });
@@ -76,14 +75,14 @@ const registerPlayer = async (req,res) => {
 }
 
 
-
-
-
-
+const updateProfile = async (req,res) => {
+    const { id, } = req.params;
+}
 
 
 
 //to export all functions to the router
 module.exports = {
     registerPlayer,
+    updateProfile
 };

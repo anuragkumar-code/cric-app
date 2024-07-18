@@ -6,73 +6,6 @@ const User = require('../models/userModel');
 const secretKey = process.env.JWT_KEY;
 
 
-//function to register new user
-const registerUser = async (req,res) => {
-    // console.log(req.body);
-    const fetched = req.body;
-    try {
-
-        if (!fetched.firstname || !validator.isAlpha(fetched.firstname)) {
-            throw new Error('Invalid or missing first name. It should only contain letters.');
-        }
-
-        if (!fetched.lastname || !validator.isAlpha(fetched.lastname)) {
-            throw new Error('Invalid or missing last name. It should only contain letters.');
-        }
-
-        if (!fetched.mobile || !validator.isMobilePhone(fetched.mobile, 'any', { strictMode: false })) {
-            throw new Error('Invalid or missing mobile number.');
-        }
-
-        if (!fetched.email || !validator.isEmail(fetched.email)) {
-            throw new Error('Invalid or missing email address.');
-        }
-
-        if (!fetched.password) {
-            throw new Error('Missing password.');
-        }
-
-        const emailUser = await User.findOne({ where: { email: fetched.email } });
-        if (emailUser) {
-            throw new Error('Email already exists.');
-        }
-
-        const mobileUser = await User.findOne({ where: { mobile: fetched.mobile } });
-        if (mobileUser) {
-            throw new Error('Mobile number already exists.');
-        }
-
-        const saltRounds = process.env.SALT_ROUNDS;
-        const salt = bcrypt.genSaltSync(parseInt(saltRounds));
-        const hashedPassword = await bcrypt.hash(fetched.password, salt);
-
-        const newUser = { 
-            firstname:fetched.firstname,
-            lastname:fetched.lastname,
-            mobile:fetched.mobile,
-            password:hashedPassword, 
-            password_decode:fetched.password, 
-            email:fetched.email
-        };
-
-        const createdUser = await User.create(newUser);
-
-
-        /// console.log(insertUserQuery);
-        console.log(createdUser);
-
-        if (createdUser) {
-            res.status(201).json({ message: 'User registered successfully', createdUser });
-        } else {
-            throw new Error('Failed to register user');
-        }
-
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-        
-    }
-}
-
 //function to login users with password
 const loginUser = async (req, res) => {
     const fetched = req.body;
@@ -238,7 +171,6 @@ const loginWithOtp = async (req,res) => {
 
 //to export all functions to the router
 module.exports = {
-    registerUser,
     loginUser,
     changePassword,
     sendOtp,
