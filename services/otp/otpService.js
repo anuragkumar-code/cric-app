@@ -1,7 +1,8 @@
 const otpGenerator = require('otp-generator');
-const twilio = require('twilio');
 
+const twilioClient = require('../../config/twilio');
 const { transporter } = require('../../config/mailer');
+
 const { User } = require('../../models/userModel'); 
 
 
@@ -28,10 +29,6 @@ const sendOTPEmail = async (to, otp) => {
 
 
 const sendOTPSMS = async (mobile, otp) => {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioClient = twilio(accountSid, authToken);
-
     await twilioClient.messages.create({
         body: `Your OTP for verification is ${otp}.`,
         to: mobile,
@@ -40,10 +37,8 @@ const sendOTPSMS = async (mobile, otp) => {
 };
 
 
-// Function to save OTP to user's record
 const saveOTP = async (userId, otp) => {
     try {
-        // Update or save OTP to user record in database
         const user = await User.findByPk(userId);
         if (user) {
             user.otp = otp;
